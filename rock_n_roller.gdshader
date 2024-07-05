@@ -4,17 +4,17 @@ group_uniforms general;
 uniform vec2 pivotPoint = vec2(0.0, 0.0);
 
 group_uniforms rock;
-uniform bool enableRock = true;
+uniform float enableRock: hint_range(0.0, 1.0, 0.05) = 0.0;
 uniform float angleRock: hint_range(0.0, 360, 1.0) = 45.0; //Degrees
 uniform float hzRock: hint_range(0.0, 5.0, 0.05) = 1.0;
 
 group_uniforms roll;
-uniform bool enableRoll = true;
+uniform float enableRoll: hint_range(0.0, 1.0, 0.05) = 0.0;
 uniform float radiusRoll: hint_range(0.0, 640.0, 0.5) = 100.0; //pixels
 uniform float hzRoll: hint_range(-5.0, 5.0, 0.05) = 1.0; //negitive for anti-clockwise
 
 group_uniforms bounce;
-uniform bool enableBounce = true;
+uniform float enableBounce: hint_range(0.0, 1.0, 0.05) = 0.0;
 uniform float scaleBounce: hint_range(0.0, 400.0, 0.5) = 100.0; //100% = 1:1, 200% = 2:1, 50% = 1:2 etc
 uniform float hzBounce: hint_range(0.0, 5.0, 0.05) = 1.0;
 
@@ -44,20 +44,20 @@ vec2 rotate(vec2 vec, vec2 centre, float angle) {
 void vertex() {
 	vec2 offset = vec2(0.0, 0.0);
 	
-	if (enableRoll) {
-		offset = vec2(sin(getTime() * hzRoll) * radiusRoll,
-					-cos(getTime() * hzRoll) * radiusRoll);
+	if (enableRoll > 0.0) {
+		offset = vec2(sin(getTime() * hzRoll) * (radiusRoll * enableRoll),
+					-cos(getTime() * hzRoll) * (radiusRoll * enableRoll));
 		VERTEX += offset;
 	}
 	
-	if (enableRock && angleRock > 0.0) {
-		VERTEX = rotate(VERTEX, pivotPoint + offset, sin(getTime() * hzRock) * (PI / 360.0 * angleRock));
+	if (enableRock > 0.0 && angleRock > 0.0) {
+		VERTEX = rotate(VERTEX, pivotPoint + offset, sin(getTime() * hzRock) * (PI / 360.0 * angleRock) * enableRock);
 	}
 	
-	if (enableBounce) {
+	if (enableBounce > 0.0) {
 		VERTEX += vec2(abs(sin(getTime() * hzBounce)) * (VERTEX.x - pivotPoint.x), 
 					   abs(sin(getTime() * hzBounce)) * (VERTEX.y - pivotPoint.y)
-				) * ((scaleBounce / 100.0) - 1.0); //100% = 1:1, 200% = 2:1, 50% = 1:2 etc
+				) * ((scaleBounce / 100.0) - 1.0) * enableBounce ; //100% = 1:1, 200% = 2:1, 50% = 1:2 etc
 	}
 }
 
