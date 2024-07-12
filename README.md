@@ -1,6 +1,10 @@
 # godot-gdshader.rock-n-roller
 A Godot shader to Rock, Roll, Bounce & Fade a Material
 
+## Example
+
+![Example](https://github.com/scawp/godot-gdshader.rock-n-roller/blob/main/images/example1.gif?raw=true "example")
+
 ## Usage
 
 Drag `rock_n_roller.gdshader` onto a Material, enable settings as desired
@@ -19,21 +23,17 @@ Drag scene `rock_n_roller_controller.tscn` as a child of the node containing the
 
 By adding arguments to a signal you can override the default behaviour and add a callback signal
 
-![Signal Settings](https://github.com/scawp/godot-gdshader.rock-n-roller/blob/main/images/signal%20Settings.png?raw=true "Signal Settings")
+![Signal Settings](https://github.com/scawp/godot-gdshader.rock-n-roller/blob/main/images/Signal%20Settings.png?raw=true "Signal Settings")
 
 Argument 1 is a bitmask 0 - 15 representing flags for (combine for multiple):
 
-0000 - off
-0001 - fade
-0010 - rock
-0100 - roll
-1000 - bounce
+- 0000 - off
+- 0001 - fade
+- 0010 - rock
+- 0100 - roll
+- 1000 - bounce
 
 Argument 2 is to set a callback signal on finish named `rock_n_roller_finished()` see `duck.gd` for example usage (on complete delete the duck from the scene)
-
-# Example
-
-![Example](https://github.com/scawp/godot-gdshader.rock-n-roller/blob/main/images/example1.gif?raw=true "example")
 
 
 # this is a Work in Progress!
