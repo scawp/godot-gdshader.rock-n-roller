@@ -1,6 +1,6 @@
 # godot-gdshader.rock-n-roller
-A Godot shader to Rock, Roll and Bounce a Node
+A Godot shader to Rock, Roll and Bounce a Material
 
 # WIP
 
-## TODO: Add Example Project and Usage guide
+## TODO: Usage guide

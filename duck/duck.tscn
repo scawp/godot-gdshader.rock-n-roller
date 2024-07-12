@@ -1,0 +1,150 @@
+[gd_scene load_steps=7 format=3 uid="uid://u28me155lqcm"]
+
+[ext_resource type="Texture2D" uid="uid://tbapbwud43we" path="res://duck/assests/duck_outline_target_white.png" id="1_427l2"]
+[ext_resource type="PackedScene" uid="uid://bggnar32bluym" path="res://rock_n_roller_controller.tscn" id="3_dw38m"]
+
+[sub_resource type="GDScript" id="GDScript_y3t6t"]
+resource_local_to_scene = true
+script/source = "extends Node2D
+
+func _ready():
+	$\"Sprite2d with Shader with Code/RockAndRollerController\".connect(\"rock_n_roller_finished\", _destroy)
+
+
+func _on_input_event(viewport, event, shape_idx):
+	if (event is InputEventMouseButton) and event.pressed:
+		#hide()
+		$\"Sprite2d with Shader with Code/RockAndRollerController\"._on_trigger_ping(11, true)
+
+
+func _destroy():
+	print(\"deleting Duck\")
+	queue_free()
+"
+
+[sub_resource type="Shader" id="Shader_pcf03"]
+code = "shader_type canvas_item;
+
+group_uniforms general;
+uniform vec2 pivotPoint = vec2(0.0, 0.0);
+
+group_uniforms rock;
+uniform float enableRock: hint_range(0.0, 1.0, 0.05) = 0.0;
+uniform float angleRock: hint_range(0.0, 360, 1.0) = 45.0; //Degrees
+uniform float hzRock: hint_range(0.0, 5.0, 0.05) = 1.0;
+
+group_uniforms roll;
+uniform float enableRoll: hint_range(0.0, 1.0, 0.05) = 0.0;
+uniform float radiusRoll: hint_range(0.0, 640.0, 0.5) = 100.0; //pixels
+uniform float hzRoll: hint_range(-5.0, 5.0, 0.05) = 1.0; //negitive for anti-clockwise
+
+group_uniforms bounce;
+uniform float enableBounce: hint_range(0.0, 1.0, 0.05) = 0.0;
+uniform float scaleBounce: hint_range(0.0, 400.0, 0.5) = 100.0; //100% = 1:1, 200% = 2:1, 50% = 1:2 etc
+uniform float hzBounce: hint_range(0.0, 5.0, 0.05) = 1.0;
+
+group_uniforms fade;
+uniform float fadeOut: hint_range(0.0, 1.0, 0.05) = 1.0;
+
+group_uniforms advanced;
+uniform bool timeOveride = false;
+uniform float phase = 0.0;
+
+group_uniforms other;
+uniform bool multiColour = false;
+uniform vec3 borderColour: source_color = vec3(0.0);
+
+float getTime() {
+	//return phase;
+	return timeOveride ? phase * PI * 2.0 : (TIME * PI * 2.0);
+	//return timeOveride ? (phase * PI * 2.0) : (TIME * PI * 2.0);
+}
+
+vec2 rotate(vec2 vec, vec2 centre, float angle) {
+	vec -= centre;
+	vec *= mat2(vec2(cos(angle), sin(angle)),
+				vec2(-sin(angle), cos(angle))
+	);
+	return vec += centre;
+}
+
+void vertex() {
+	vec2 offset = vec2(0.0, 0.0);
+	
+	if (enableRoll > 0.0) {
+		offset = vec2(sin(getTime() * hzRoll) * (radiusRoll * enableRoll),
+					-cos(getTime() * hzRoll) * (radiusRoll * enableRoll));
+		VERTEX += offset;
+	}
+	
+	if (enableRock > 0.0 && angleRock > 0.0) {
+		VERTEX = rotate(VERTEX, pivotPoint + offset, sin(getTime() * hzRock) * (PI / 360.0 * angleRock) * enableRock);
+	}
+	
+	if (enableBounce > 0.0) {
+		VERTEX += vec2(abs(sin(getTime() * hzBounce)) * (VERTEX.x - pivotPoint.x), 
+					   abs(sin(getTime() * hzBounce)) * (VERTEX.y - pivotPoint.y)
+				) * ((scaleBounce / 100.0) - 1.0) * enableBounce ; //100% = 1:1, 200% = 2:1, 50% = 1:2 etc
+	}
+}
+
+void fragment() {
+	//TODO: Make this customisable
+	if (multiColour) {
+		if (COLOR.rgb != borderColour) {
+			COLOR.b -= sin(getTime() / 2.0);
+			COLOR.g -= cos(getTime() / 3.0);
+			COLOR.r += cos(getTime() / 2.5);
+		}
+	}
+	
+	//fadeout
+	if(COLOR.a > 0.0) {
+		COLOR.a -= 1.0 - clamp(fadeOut, 0.0, 1.0);
+	}
+}"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_mld4q"]
+shader = SubResource("Shader_pcf03")
+shader_parameter/pivotPoint = Vector2(0, 0)
+shader_parameter/enableRock = 1.0
+shader_parameter/angleRock = 45.0
+shader_parameter/hzRock = 1.0
+shader_parameter/enableRoll = 0.0
+shader_parameter/radiusRoll = 100.0
+shader_parameter/hzRoll = 1.0
+shader_parameter/enableBounce = 0.0
+shader_parameter/scaleBounce = 150.0
+shader_parameter/hzBounce = 1.0
+shader_parameter/fadeOut = 1.0
+shader_parameter/timeOveride = true
+shader_parameter/phase = 0.0
+shader_parameter/multiColour = false
+shader_parameter/borderColour = Color(0, 0, 0, 1)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vckte"]
+radius = 51.0
+
+[node name="Duck" type="Node2D"]
+position = Vector2(79, 83)
+script = SubResource("GDScript_y3t6t")
+
+[node name="Sprite2d with Shader with Code" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_mld4q")
+texture = ExtResource("1_427l2")
+offset = Vector2(3, -20.5)
+
+[node name="RockAndRollerController" parent="Sprite2d with Shader with Code" instance=ExtResource("3_dw38m")]
+default_flags = 10
+fade_delay = 1.5
+time_override = true
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(2.08165e-12, -19.53)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_vckte")
+
+[connection signal="input_event" from="Area2D" to="." method="_on_input_event"]
+
+[editable path="Sprite2d with Shader with Code/RockAndRollerController"]

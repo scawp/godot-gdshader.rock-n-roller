@@ -23,14 +23,16 @@ uniform float fadeOut: hint_range(0.0, 1.0, 0.05) = 1.0;
 
 group_uniforms advanced;
 uniform bool timeOveride = false;
-uniform float phase: hint_range(0.0, 360.0, 5.0)  = 0.0;
+uniform float phase = 0.0;
 
 group_uniforms other;
 uniform bool multiColour = false;
 uniform vec3 borderColour: source_color = vec3(0.0);
 
 float getTime() {
-	return timeOveride ? radians(phase) : (TIME * PI * 2.0);
+	//return phase;
+	return timeOveride ? phase * PI * 2.0 : (TIME * PI * 2.0);
+	//return timeOveride ? (phase * PI * 2.0) : (TIME * PI * 2.0);
 }
 
 vec2 rotate(vec2 vec, vec2 centre, float angle) {

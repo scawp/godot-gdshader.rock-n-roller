@@ -1,0 +1,135 @@
+[gd_scene load_steps=10 format=3 uid="uid://dk8q5phmtgi3w"]
+
+[ext_resource type="Shader" path="res://rock_n_roller.gdshader" id="1_tdb5i"]
+[ext_resource type="PackedScene" uid="uid://bggnar32bluym" path="res://rock_n_roller_controller.tscn" id="2_c0ohd"]
+[ext_resource type="PackedScene" uid="uid://u28me155lqcm" path="res://duck/duck.tscn" id="3_dd2iq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nnnbp"]
+shader = ExtResource("1_tdb5i")
+shader_parameter/pivotPoint = Vector2(320, 130)
+shader_parameter/enableRock = 1.0
+shader_parameter/angleRock = 45.0
+shader_parameter/hzRock = 1.0
+shader_parameter/enableRoll = 1.0
+shader_parameter/radiusRoll = 50.0
+shader_parameter/hzRoll = -0.2
+shader_parameter/enableBounce = 1.0
+shader_parameter/scaleBounce = 50.0
+shader_parameter/hzBounce = 0.5
+shader_parameter/fadeOut = 1.0
+shader_parameter/timeOveride = false
+shader_parameter/phase = 360.0
+shader_parameter/multiColour = true
+shader_parameter/borderColour = Color(0, 0, 0, 1)
+
+[sub_resource type="SystemFont" id="SystemFont_dq5ea"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_mi34h"]
+font = SubResource("SystemFont_dq5ea")
+font_size = 60
+outline_size = 10
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pt2rs"]
+shader = ExtResource("1_tdb5i")
+shader_parameter/pivotPoint = Vector2(250, 125)
+shader_parameter/enableRock = 0.0
+shader_parameter/angleRock = 45.0
+shader_parameter/hzRock = 2.0
+shader_parameter/enableRoll = 0.0
+shader_parameter/radiusRoll = 20.0
+shader_parameter/hzRoll = 1.0
+shader_parameter/enableBounce = 0.0
+shader_parameter/scaleBounce = 150.0
+shader_parameter/hzBounce = 1.5
+shader_parameter/fadeOut = 1.0
+shader_parameter/timeOveride = false
+shader_parameter/phase = 360.0
+shader_parameter/multiColour = false
+shader_parameter/borderColour = Color(0, 0, 0, 1)
+
+[sub_resource type="SystemFont" id="SystemFont_ixoyv"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_tju5v"]
+font_size = 50
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Label with Shader Without Code" type="Label" parent="."]
+material = SubResource("ShaderMaterial_nnnbp")
+offset_left = 10.0
+offset_top = 18.0
+offset_right = 650.0
+offset_bottom = 278.0
+text = "No Code"
+label_settings = SubResource("LabelSettings_mi34h")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label with Shader With Code" type="Label" parent="."]
+material = SubResource("ShaderMaterial_pt2rs")
+offset_left = 739.0
+offset_top = 86.0
+offset_right = 1239.0
+offset_bottom = 336.0
+pivot_offset = Vector2(250, 125)
+text = "With Code"
+label_settings = SubResource("LabelSettings_mi34h")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RockAndRollerController" parent="Label with Shader With Code" instance=ExtResource("2_c0ohd")]
+
+[node name="GridContainer" type="GridContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 911.0
+offset_top = 492.0
+offset_right = 1277.0
+offset_bottom = 799.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Trigger On Off" type="Button" parent="GridContainer"]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_ixoyv")
+theme_override_font_sizes/font_size = 39
+text = "Ping Pong
+"
+
+[node name="Trigger On" type="Button" parent="GridContainer"]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_ixoyv")
+theme_override_font_sizes/font_size = 39
+text = "Activate"
+
+[node name="Trigger Off" type="Button" parent="GridContainer"]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_ixoyv")
+theme_override_font_sizes/font_size = 39
+text = "Deactivate
+"
+
+[node name="Label Click a Duck" type="Label" parent="."]
+offset_left = 227.0
+offset_top = 633.0
+offset_right = 513.0
+offset_bottom = 702.0
+text = "Click a duck"
+label_settings = SubResource("LabelSettings_tju5v")
+
+[node name="Duck" parent="." instance=ExtResource("3_dd2iq")]
+position = Vector2(173, 569)
+
+[node name="Duck2" parent="." instance=ExtResource("3_dd2iq")]
+position = Vector2(352, 569)
+
+[node name="Duck3" parent="." instance=ExtResource("3_dd2iq")]
+position = Vector2(539, 572)
+
+[connection signal="pressed" from="GridContainer/Trigger On Off" to="Label with Shader With Code/RockAndRollerController" method="_on_trigger_ping" binds= [14]]
+[connection signal="pressed" from="GridContainer/Trigger On" to="Label with Shader With Code/RockAndRollerController" method="_on_trigger_on"]
+[connection signal="pressed" from="GridContainer/Trigger Off" to="Label with Shader With Code/RockAndRollerController" method="_on_trigger_off" binds= [15]]
